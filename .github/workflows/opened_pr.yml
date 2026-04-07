@@ -1,0 +1,25 @@
+name: Opened PR
+
+on:
+  pull_request:
+    types: [opened, reopened, ready_for_review]
+    branches: [ "main" ]
+
+jobs:
+  notify_discord:
+    # Draftの場合通知しない
+    if: github.event.pull_request.draft == false
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Discord message
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          USER_NAME: ${{ github.triggering_actor }}
+        run: |
+          set -e
+          CONTENT="プルリクエストが発行されました、レビューをお願いします!\n  リンク: [$PR_TITLE]($PR_URL) \n  発行者: $USER_NAME"
+          curl -H "Content-Type: application/json" \
+               -d "{\"content\":\"${CONTENT}\"}" \
+               "$DISCORD_WEBHOOK_URL"
