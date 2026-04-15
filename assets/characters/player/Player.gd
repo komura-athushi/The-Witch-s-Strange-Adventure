@@ -9,13 +9,13 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 
-	_apply_horizontal_movement(delta)
+	_apply_horizontal_movement()
 	_apply_vertical_movement(delta)
 
 	move_and_slide()
 
 # 横移動
-func _apply_horizontal_movement(delta: float) -> void:
+func _apply_horizontal_movement() -> void:
 	var axis = Input.get_axis("move_left", "move_right")
 	velocity.x = axis * config.move_speed
 
