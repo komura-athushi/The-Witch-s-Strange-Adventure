@@ -21,3 +21,4 @@ scale = Vector2(1, 1.54)
 shape = SubResource("CapsuleShape2D_prble")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=2089393164]
+position = Vector2(0, -62)
