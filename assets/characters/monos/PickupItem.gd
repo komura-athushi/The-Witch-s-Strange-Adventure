@@ -9,6 +9,7 @@ enum State {
 
 @export_flags_2d_physics var world_collision_mask: int = 1
 @export var throw_speed: float = 520.0
+@export var friction: float = 0.985
 
 @onready var clickable: Area2D = $Clickable
 
@@ -23,6 +24,7 @@ func _ready() -> void:
 func _physics_process(delta: float) -> void:
 	match state:
 		State.WORLD, State.THROWN:
+			velocity *= friction
 			velocity.y += _get_gravity_value() * delta
 			move_and_slide()
 			if state == State.THROWN and is_on_floor():
