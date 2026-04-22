@@ -9,12 +9,18 @@ enum State {
 
 @export_flags_2d_physics var world_collision_mask: int = 1
 @export var throw_speed: float = 520.0
+@export var rainbow_speed: float = 1.8
+@export var glow_pulse_speed: float = 3.0
+@export_range(0.0, 1.0, 0.01) var glow_min_value: float = 0.7
+@export_range(0.0, 1.0, 0.01) var glow_max_value: float = 1.0
 
 @onready var clickable: Area2D = $Clickable
+@onready var sprite: Sprite2D = $Sprite2D
 
 var state: State = State.WORLD
 var holder: Player = null
 var _default_clickable_layer: int
+var _rainbow_time: float = 0.0
 
 func _ready() -> void:
 	add_to_group("interactable")
@@ -33,6 +39,8 @@ func _physics_process(delta: float) -> void:
 			if holder != null:
 				global_position = holder.get_hold_position(Vector2.ZERO)
 			velocity = Vector2.ZERO
+
+	_apply_rainbow_glow(delta)
 
 func can_interact(actor: Node) -> bool:
 	if not actor is Player:
@@ -76,3 +84,12 @@ func throw_to(target_global: Vector2) -> void:
 	
 func _get_gravity_value() -> float:
 	return float(ProjectSettings.get_setting("physics/2d/default_gravity"))
+
+func _apply_rainbow_glow(delta: float) -> void:
+	_rainbow_time += delta
+
+	var hue := fmod(_rainbow_time * rainbow_speed, 1.0)
+	var pulse := (sin(_rainbow_time * glow_pulse_speed) + 1.0) * 0.5
+	var value := lerp(glow_min_value, glow_max_value, pulse)
+
+	sprite.modulate = Color.from_hsv(hue, 1.0, value)
