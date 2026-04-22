@@ -58,9 +58,7 @@ func _unhandled_input(event: InputEvent) -> void:
 			if target != null and target.has_method("interact"):
 				target.interact(self)
 		else:
-			# 今回は「頭上に持つ」まででOK
-			# 後でここを throw_to(mouse_global) に差し替える
-			pass
+			throw_held_item(mouse_global)
 
 func pick_item(item: PickupItem) -> void:
 	if held_item != null:

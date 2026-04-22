@@ -8,6 +8,7 @@ enum State {
 }
 
 @export_flags_2d_physics var world_collision_mask: int = 1
+@export var throw_speed: float = 520.0
 
 @onready var clickable: Area2D = $Clickable
 
@@ -24,6 +25,9 @@ func _physics_process(delta: float) -> void:
 		State.WORLD, State.THROWN:
 			velocity.y += _get_gravity_value() * delta
 			move_and_slide()
+			if state == State.THROWN and is_on_floor():
+				state = State.WORLD
+				clickable.collision_layer = _default_clickable_layer
 
 		State.HELD:
 			if holder != null:
@@ -57,6 +61,18 @@ func drop_to_world(drop_position: Vector2) -> void:
 	collision_mask = world_collision_mask
 	clickable.collision_layer = _default_clickable_layer
 	z_index = 0
+
+func throw_to(target_global: Vector2) -> void:
+	holder = null
+	state = State.THROWN
+	collision_mask = world_collision_mask
+	clickable.collision_layer = 0
+	z_index = 0
+
+	var direction := target_global - global_position
+	if direction.length() < 1.0:
+		direction = Vector2.RIGHT
+	velocity = direction.normalized() * throw_speed
 	
 func _get_gravity_value() -> float:
 	return float(ProjectSettings.get_setting("physics/2d/default_gravity"))
