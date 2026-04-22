@@ -10,7 +10,7 @@ enum State {
 @export_flags_2d_physics var world_collision_mask: int = 1
 @export var throw_speed: float = 520.0
 @export_range(0.1, 3.0, 0.1) var throw_weight: float = 1.0
-@export var friction: float = 0.985
+@export var friction: float = 0.99
 
 @onready var clickable: Area2D = $Clickable
 
@@ -114,7 +114,7 @@ func _get_blend_factor(progress: float, free_zone: float, blend_zone: float) -> 
 	return clamp((progress - free_zone) / blend_zone, 0.0, 1.0)
 
 func _get_weight_ratio() -> float:
-	return clamp((throw_weight - 0.6) / 1.8, 0.0, 1.0)
+	return clamp((throw_weight - 1.0) / 1.8, 0.0, 1.0)
 
 func _get_effective_throw_speed() -> float:
 	return throw_speed / sqrt(max(throw_weight, 0.1))
