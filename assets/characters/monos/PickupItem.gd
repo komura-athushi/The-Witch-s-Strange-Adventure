@@ -80,11 +80,11 @@ func throw_to(target_global: Vector2) -> void:
 	clickable.collision_layer = 0
 	z_index = 0
 
-	var direction := target_global - global_position
-	if direction.length() < 1.0:
-		direction = Vector2.RIGHT
+	var throw_direction_x := sign(target_global.x - global_position.x)
+	if is_zero_approx(throw_direction_x):
+		throw_direction_x = 1.0
 	_throw_start_position = global_position
-	velocity = direction.normalized() * throw_speed
+	velocity = Vector2(throw_direction_x * throw_speed, 0.0)
 	
 func _get_gravity_value() -> float:
 	return float(ProjectSettings.get_setting("physics/2d/default_gravity"))
