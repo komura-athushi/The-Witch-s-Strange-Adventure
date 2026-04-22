@@ -12,6 +12,7 @@ enum State {
 @export_range(0.1, 3.0, 0.1) var throw_weight: float = 1.0
 @export var friction: float = 0.99
 
+
 @onready var clickable: Area2D = $Clickable
 
 var state: State = State.WORLD
