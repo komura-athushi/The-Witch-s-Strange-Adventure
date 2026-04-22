@@ -9,12 +9,9 @@ enum State {
 
 @export_flags_2d_physics var world_collision_mask: int = 1
 @export var throw_speed: float = 520.0
-@export var friction: float = 0.985
-@export var throw_air_drag: float = 2.0
-@export var throw_force_free_time: float = 0.12
-@export var throw_force_blend_time: float = 0.35
-@export var throw_force_free_distance: float = 120.0
-@export var throw_force_blend_distance: float = 180.0
+@export_range(0.1, 3.0, 0.1) var throw_weight: float = 1.0
+@export var friction: float = 0.99
+
 
 @onready var clickable: Area2D = $Clickable
 
@@ -38,7 +35,7 @@ func _physics_process(delta: float) -> void:
 		State.THROWN:
 			_throw_elapsed += delta
 			var throw_force_factor := _get_throw_force_factor()
-			var drag_factor := exp(-throw_air_drag * throw_force_factor * delta)
+			var drag_factor := exp(-_get_throw_air_drag() * throw_force_factor * delta)
 			velocity *= drag_factor
 			velocity.y += _get_gravity_value() * throw_force_factor * delta
 			move_and_slide()
@@ -91,18 +88,22 @@ func throw_to(target_global: Vector2) -> void:
 		direction = Vector2.RIGHT
 	_throw_start_position = global_position
 	_throw_elapsed = 0.0
-	velocity = direction.normalized() * throw_speed
+	velocity = direction.normalized() * _get_effective_throw_speed()
 	
 func _get_gravity_value() -> float:
 	return float(ProjectSettings.get_setting("physics/2d/default_gravity"))
 
 func _get_throw_force_factor() -> float:
-	var time_factor := _get_blend_factor(_throw_elapsed, throw_force_free_time, throw_force_blend_time)
+	var time_factor := _get_blend_factor(
+		_throw_elapsed,
+		_get_throw_force_free_time(),
+		_get_throw_force_blend_time()
+	)
 	var traveled_distance := global_position.distance_to(_throw_start_position)
 	var distance_factor := _get_blend_factor(
 		traveled_distance,
-		throw_force_free_distance,
-		throw_force_blend_distance
+		_get_throw_force_free_distance(),
+		_get_throw_force_blend_distance()
 	)
 	return max(time_factor, distance_factor)
 
@@ -112,3 +113,24 @@ func _get_blend_factor(progress: float, free_zone: float, blend_zone: float) -> 
 	if blend_zone <= 0.0:
 		return 1.0
 	return clamp((progress - free_zone) / blend_zone, 0.0, 1.0)
+
+func _get_weight_ratio() -> float:
+	return clamp((throw_weight - 1.0) / 1.8, 0.0, 1.0)
+
+func _get_effective_throw_speed() -> float:
+	return throw_speed / sqrt(max(throw_weight, 0.1))
+
+func _get_throw_air_drag() -> float:
+	return lerp(1.6, 2.8, _get_weight_ratio())
+
+func _get_throw_force_free_time() -> float:
+	return lerp(0.18, 0.07, _get_weight_ratio())
+
+func _get_throw_force_blend_time() -> float:
+	return lerp(0.42, 0.2, _get_weight_ratio())
+
+func _get_throw_force_free_distance() -> float:
+	return lerp(190.0, 80.0, _get_weight_ratio())
+
+func _get_throw_force_blend_distance() -> float:
+	return lerp(220.0, 120.0, _get_weight_ratio())
