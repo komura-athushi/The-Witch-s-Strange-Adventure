@@ -10,12 +10,16 @@ enum State {
 @export_flags_2d_physics var world_collision_mask: int = 1
 @export var throw_speed: float = 520.0
 @export var friction: float = 0.985
+@export var throw_horizontal_deceleration: float = 900.0
+@export var throw_gravity_free_distance: float = 120.0
+@export var throw_gravity_blend_distance: float = 180.0
 
 @onready var clickable: Area2D = $Clickable
 
 var state: State = State.WORLD
 var holder: Player = null
 var _default_clickable_layer: int
+var _throw_start_position: Vector2 = Vector2.ZERO
 
 func _ready() -> void:
 	add_to_group("interactable")
@@ -23,11 +27,16 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	match state:
-		State.WORLD, State.THROWN:
+		State.WORLD:
 			velocity *= friction
 			velocity.y += _get_gravity_value() * delta
 			move_and_slide()
-			if state == State.THROWN and is_on_floor():
+
+		State.THROWN:
+			velocity.x = move_toward(velocity.x, 0.0, throw_horizontal_deceleration * delta)
+			velocity.y += _get_gravity_value() * _get_throw_gravity_factor() * delta
+			move_and_slide()
+			if is_on_floor():
 				state = State.WORLD
 				clickable.collision_layer = _default_clickable_layer
 
@@ -74,7 +83,22 @@ func throw_to(target_global: Vector2) -> void:
 	var direction := target_global - global_position
 	if direction.length() < 1.0:
 		direction = Vector2.RIGHT
+	_throw_start_position = global_position
 	velocity = direction.normalized() * throw_speed
 	
 func _get_gravity_value() -> float:
 	return float(ProjectSettings.get_setting("physics/2d/default_gravity"))
+
+func _get_throw_gravity_factor() -> float:
+	var traveled_distance := global_position.distance_to(_throw_start_position)
+	if traveled_distance <= throw_gravity_free_distance:
+		return 0.0
+
+	if throw_gravity_blend_distance <= 0.0:
+		return 1.0
+
+	return clamp(
+		(traveled_distance - throw_gravity_free_distance) / throw_gravity_blend_distance,
+		0.0,
+		1.0
+	)
