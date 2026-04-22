@@ -10,9 +10,11 @@ enum State {
 @export_flags_2d_physics var world_collision_mask: int = 1
 @export var throw_speed: float = 520.0
 @export var friction: float = 0.985
-@export var throw_horizontal_deceleration: float = 900.0
-@export var throw_gravity_free_distance: float = 120.0
-@export var throw_gravity_blend_distance: float = 180.0
+@export var throw_air_drag: float = 2.0
+@export var throw_force_free_time: float = 0.12
+@export var throw_force_blend_time: float = 0.35
+@export var throw_force_free_distance: float = 120.0
+@export var throw_force_blend_distance: float = 180.0
 
 @onready var clickable: Area2D = $Clickable
 
@@ -20,6 +22,7 @@ var state: State = State.WORLD
 var holder: Player = null
 var _default_clickable_layer: int
 var _throw_start_position: Vector2 = Vector2.ZERO
+var _throw_elapsed: float = 0.0
 
 func _ready() -> void:
 	add_to_group("interactable")
@@ -33,8 +36,11 @@ func _physics_process(delta: float) -> void:
 			move_and_slide()
 
 		State.THROWN:
-			velocity.x = move_toward(velocity.x, 0.0, throw_horizontal_deceleration * delta)
-			velocity.y += _get_gravity_value() * _get_throw_gravity_factor() * delta
+			_throw_elapsed += delta
+			var throw_force_factor := _get_throw_force_factor()
+			var drag_factor := exp(-throw_air_drag * throw_force_factor * delta)
+			velocity *= drag_factor
+			velocity.y += _get_gravity_value() * throw_force_factor * delta
 			move_and_slide()
 			if is_on_floor():
 				state = State.WORLD
@@ -80,25 +86,29 @@ func throw_to(target_global: Vector2) -> void:
 	clickable.collision_layer = 0
 	z_index = 0
 
-	var throw_direction_x := sign(target_global.x - global_position.x)
-	if is_zero_approx(throw_direction_x):
-		throw_direction_x = 1.0
+	var direction := target_global - global_position
+	if direction.length() < 1.0:
+		direction = Vector2.RIGHT
 	_throw_start_position = global_position
-	velocity = Vector2(throw_direction_x * throw_speed, 0.0)
+	_throw_elapsed = 0.0
+	velocity = direction.normalized() * throw_speed
 	
 func _get_gravity_value() -> float:
 	return float(ProjectSettings.get_setting("physics/2d/default_gravity"))
 
-func _get_throw_gravity_factor() -> float:
+func _get_throw_force_factor() -> float:
+	var time_factor := _get_blend_factor(_throw_elapsed, throw_force_free_time, throw_force_blend_time)
 	var traveled_distance := global_position.distance_to(_throw_start_position)
-	if traveled_distance <= throw_gravity_free_distance:
-		return 0.0
-
-	if throw_gravity_blend_distance <= 0.0:
-		return 1.0
-
-	return clamp(
-		(traveled_distance - throw_gravity_free_distance) / throw_gravity_blend_distance,
-		0.0,
-		1.0
+	var distance_factor := _get_blend_factor(
+		traveled_distance,
+		throw_force_free_distance,
+		throw_force_blend_distance
 	)
+	return max(time_factor, distance_factor)
+
+func _get_blend_factor(progress: float, free_zone: float, blend_zone: float) -> float:
+	if progress <= free_zone:
+		return 0.0
+	if blend_zone <= 0.0:
+		return 1.0
+	return clamp((progress - free_zone) / blend_zone, 0.0, 1.0)
