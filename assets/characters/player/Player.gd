@@ -5,20 +5,26 @@ extends CharacterBody2D
 
 
 @export_flags_2d_physics var click_mask: int = 1 << 3
+@export var damage_invincible_sec: float = 3.0
 
 @onready var hold_socket: Marker2D = $HoldSocket
 @onready var interaction_detector: Area2D = $InteractionDetector
 var nearby_interactables: Array[Node] = []
 var held_item: PickupItem = null
+var hp: int = 3
+var damage_invincible_timer: float = 0.0
 
 
 func _ready() -> void:
+	add_to_group("player")
 	if config == null:
 		config = PlayerConfig.new()
 	interaction_detector.body_entered.connect(_on_detector_body_entered)
 	interaction_detector.body_exited.connect(_on_detector_body_exited)
 
 func _physics_process(delta: float) -> void:
+	if damage_invincible_timer > 0.0:
+		damage_invincible_timer -= delta
 
 	_apply_horizontal_movement()
 	_apply_vertical_movement(delta)
@@ -113,3 +119,15 @@ func _on_detector_body_entered(body: Node) -> void:
 
 func _on_detector_body_exited(body: Node) -> void:
 	nearby_interactables.erase(body)
+
+func take_damage(amount: int, source: Node = null) -> void:
+	if amount <= 0:
+		return
+	if damage_invincible_timer > 0.0:
+		return
+
+	hp = max(hp - amount, 0)
+	damage_invincible_timer = damage_invincible_sec
+	modulate = Color(1.0, 0.6, 0.6)
+	await get_tree().create_timer(0.12).timeout
+	modulate = Color(1, 1, 1)
