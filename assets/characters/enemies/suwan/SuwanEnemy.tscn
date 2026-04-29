@@ -1,0 +1,39 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://assets/characters/enemies/suwan/SuwanEnemy.gd" id="1_3x1n4"]
+[ext_resource type="Texture2D" uid="uid://5msadyinjyug" path="res://icon.svg" id="2_n0vti"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_8x2pc"]
+radius = 10.0
+height = 24.0
+
+[node name="SuwanEnemy" type="CharacterBody2D"]
+script = ExtResource("1_3x1n4")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -11)
+scale = Vector2(0.16, 0.16)
+modulate = Color(1, 0.5, 0.5, 1)
+texture = ExtResource("2_n0vti")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -12)
+shape = SubResource("CapsuleShape2D_8x2pc")
+
+[node name="DebugLabel" type="Label" parent="."]
+offset_left = -46.0
+offset_top = -56.0
+offset_right = 50.0
+offset_bottom = -20.0
+text = "PATROL"
+horizontal_alignment = 1
+
+[node name="ExclamationLabel" type="Label" parent="."]
+visible = false
+offset_left = -12.0
+offset_top = -84.0
+offset_right = 12.0
+offset_bottom = -56.0
+text = "!"
+theme_override_font_sizes/font_size = 32
+horizontal_alignment = 1

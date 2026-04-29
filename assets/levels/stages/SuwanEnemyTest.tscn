@@ -1,0 +1,36 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" uid="uid://dkcvic8lqhu2b" path="res://assets/characters/player/player.tscn" id="1_player"]
+[ext_resource type="PackedScene" path="res://assets/characters/enemies/suwan/SuwanEnemy.tscn" id="2_suwan"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
+size = Vector2(900, 40)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_wall"]
+size = Vector2(40, 300)
+
+[node name="SuwanEnemyTest" type="Node2D"]
+
+[node name="Ground" type="StaticBody2D" parent="."]
+position = Vector2(0, 120)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
+shape = SubResource("RectangleShape2D_ground")
+
+[node name="LeftWall" type="StaticBody2D" parent="."]
+position = Vector2(-420, -20)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="LeftWall"]
+shape = SubResource("RectangleShape2D_wall")
+
+[node name="RightWall" type="StaticBody2D" parent="."]
+position = Vector2(420, -20)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="RightWall"]
+shape = SubResource("RectangleShape2D_wall")
+
+[node name="Player" parent="." groups=["Player"] instance=ExtResource("1_player")]
+position = Vector2(-220, 60)
+
+[node name="SuwanEnemy" parent="." instance=ExtResource("2_suwan")]
+position = Vector2(120, 80)
