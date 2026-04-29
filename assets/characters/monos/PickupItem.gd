@@ -33,6 +33,7 @@ func _enter_tree() -> void:
 func _ready() -> void:
 	_bind_item_settings()
 	_apply_item_settings()
+	set_physics_process(not Engine.is_editor_hint())
 	add_to_group("interactable")
 	_default_clickable_layer = clickable.collision_layer
 
@@ -84,9 +85,6 @@ func _apply_item_settings() -> void:
 	friction = item_settings.friction
 
 func _physics_process(delta: float) -> void:
-	if Engine.is_editor_hint():
-		return
-
 	match state:
 		State.WORLD:
 			velocity *= friction
