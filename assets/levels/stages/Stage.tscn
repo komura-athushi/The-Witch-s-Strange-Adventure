@@ -1,8 +1,9 @@
-[gd_scene format=3 uid="uid://3xpc5es2wnig"]
+[gd_scene format=3 uid="uid://3xpc5es2wnig" load_steps=5]
 
 [ext_resource type="PackedScene" uid="uid://dkcvic8lqhu2b" path="res://assets/characters/player/player.tscn" id="1_sc14x"]
 [ext_resource type="PackedScene" uid="uid://wywbaagc7hwm" path="res://assets/characters/backgrounds/tests/BackGroundTest.tscn" id="2_5sdbm"]
 [ext_resource type="PackedScene" uid="uid://bsq1fna1l0b3g" path="res://assets/characters/monos/PickupItem.tscn" id="3_5sdbm"]
+[ext_resource type="PackedScene" path="res://assets/characters/enemies/suwan/SuwanEnemy.tscn" id="4_suwan"]
 
 [node name="Node2D" type="Node2D" unique_id=219757869]
 
@@ -16,3 +17,6 @@ scale = Vector2(10.120002, 0.56)
 [node name="PickupItem" parent="." unique_id=2121301379 instance=ExtResource("3_5sdbm")]
 position = Vector2(130, 23)
 scale = Vector2(0.14230613, 0.18575664)
+
+[node name="Suwan" parent="." instance=ExtResource("4_suwan")]
+position = Vector2(230, 24)

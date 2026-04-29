@@ -17,6 +17,8 @@ func _ready() -> void:
 		config = PlayerConfig.new()
 	interaction_detector.body_entered.connect(_on_detector_body_entered)
 	interaction_detector.body_exited.connect(_on_detector_body_exited)
+	if not is_in_group("Player"):
+		add_to_group("Player")
 
 func _physics_process(delta: float) -> void:
 
