@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://ed3vn70c5xel"
-path="res://.godot/imported/taru.png-7a952ef1e72db66d7165546262075c27.ctex"
+uid="uid://df3ftyy8vkuok"
+path="res://.godot/imported/player_walk4.png-5ef2815e022b9122d6ae0e990a7dd00c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://assets/characters/monos/taru.png"
-dest_files=["res://.godot/imported/taru.png-7a952ef1e72db66d7165546262075c27.ctex"]
+source_file="res://assets/characters/player/sprites/animations/walk/player_walk4.png"
+dest_files=["res://.godot/imported/player_walk4.png-5ef2815e022b9122d6ae0e990a7dd00c.ctex"]
 
 [params]
 

@@ -8,9 +8,11 @@ extends CharacterBody2D
 
 @onready var hold_socket: Marker2D = $HoldSocket
 @onready var interaction_detector: Area2D = $InteractionDetector
+@onready var sprite2D = $AnimatedSprite2D
 var nearby_interactables: Array[Node] = []
 var held_item: PickupItem = null
 
+var ANIM_THRESHOLD = 5.0
 
 func _ready() -> void:
 	if config == null:
@@ -22,8 +24,20 @@ func _physics_process(delta: float) -> void:
 
 	_apply_horizontal_movement()
 	_apply_vertical_movement(delta)
+	
+	# アニメーション更新
+	_update_animation()
 
 	move_and_slide()
+	
+func _update_animation():
+	if abs(velocity.x) > ANIM_THRESHOLD:
+		sprite2D.animation = "walk"
+
+		sprite2D.play()
+		sprite2D.flip_h = velocity.x < 0
+	else:
+		sprite2D.stop()
 
 # 横移動
 func _apply_horizontal_movement() -> void:
