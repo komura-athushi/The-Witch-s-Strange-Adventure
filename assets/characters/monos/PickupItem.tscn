@@ -1,16 +1,18 @@
 [gd_scene format=3 uid="uid://bsq1fna1l0b3g"]
 
-[ext_resource type="Texture2D" uid="uid://ed3vn70c5xel" path="res://assets/characters/monos/taru.png" id="1_dtx2w"]
+[ext_resource type="Texture2D" uid="uid://ed3vn70c5xel" path="res://assets/characters/monos/sprites/Barrel.png" id="1_dtx2w"]
 [ext_resource type="Script" uid="uid://oof6yk211tt1" path="res://assets/characters/monos/PickupItem.gd" id="1_n3a7r"]
+[ext_resource type="Resource" uid="uid://epfq75qqwdou" path="res://assets/resources/BarrelSetting.tres" id="3_g3qse"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dtx2w"]
-size = Vector2(20, 234)
+size = Vector2(13, 100)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n3a7r"]
-size = Vector2(20, 253)
+size = Vector2(10, 100)
 
 [node name="PickupItem" type="CharacterBody2D" unique_id=2121301379]
 script = ExtResource("1_n3a7r")
+item_settings = ExtResource("3_g3qse")
 throw_speed = 540.0
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1423953141]
@@ -18,7 +20,7 @@ texture = ExtResource("1_dtx2w")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=635102177]
 position = Vector2(0, -1)
-scale = Vector2(11.719998, 1)
+scale = Vector2(18, 2.5)
 shape = SubResource("RectangleShape2D_dtx2w")
 
 [node name="Clickable" type="Area2D" parent="." unique_id=236521259]
@@ -26,5 +28,5 @@ collision_layer = 8
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Clickable" unique_id=1297204461]
 position = Vector2(0, 0.5)
-scale = Vector2(12.519998, 1)
+scale = Vector2(25, 2.5)
 shape = SubResource("RectangleShape2D_n3a7r")
