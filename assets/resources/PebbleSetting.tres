@@ -1,13 +1,14 @@
-[gd_resource type="Resource" script_class="PickupItemSettings" format=3 uid="uid://epfq75qqwdou"]
+[gd_resource type="Resource" script_class="PickupItemSettings" format=3 uid="uid://dn3ogx4dwo7xo"]
 
 [ext_resource type="Script" uid="uid://csxkdoyekik8r" path="res://assets/characters/monos/PickupItemSettings.gd" id="1_sxk7c"]
-[ext_resource type="Texture2D" uid="uid://ed3vn70c5xel" path="res://assets/characters/monos/sprites/Barrel.png" id="2_10ncf"]
+[ext_resource type="Texture2D" uid="uid://dravaeiurrxkf" path="res://assets/characters/monos/sprites/Pebble.png" id="2_lq7gg"]
 
 [resource]
 script = ExtResource("1_sxk7c")
-texture = ExtResource("2_10ncf")
-body_shape_size = Vector2(20, 20)
-body_shape_scale = Vector2(18, 2.5)
-clickable_shape_size = Vector2(20, 20)
-clickable_shape_scale = Vector2(25, 2.5)
+texture = ExtResource("2_lq7gg")
+sprite_scale = Vector2(9, 9)
+sprite_offset = Vector2(0, -20)
+body_shape_size = Vector2(13, 100)
+clickable_shape_size = Vector2(10, 100)
 throw_speed = 540.0
+throw_weight = 0.7

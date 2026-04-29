@@ -2,7 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://ed3vn70c5xel" path="res://assets/characters/monos/sprites/Barrel.png" id="1_dtx2w"]
 [ext_resource type="Script" uid="uid://oof6yk211tt1" path="res://assets/characters/monos/PickupItem.gd" id="1_n3a7r"]
-[ext_resource type="Resource" uid="uid://epfq75qqwdou" path="res://assets/resources/PebbleSetting.tres" id="3_g3qse"]
+[ext_resource type="Resource" uid="uid://epfq75qqwdou" path="res://assets/resources/BarrelSetting.tres" id="3_g3qse"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dtx2w"]
 size = Vector2(13, 100)
