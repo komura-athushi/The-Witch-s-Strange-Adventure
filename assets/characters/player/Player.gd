@@ -3,6 +3,12 @@ extends CharacterBody2D
 
 @export var config: PlayerConfig
 
+@export var max_hp: int = 3
+@export var damage_invincible_time: float = 3.0
+
+var hp: int
+var damage_invincible_timer: float = 0.0
+
 
 @export_flags_2d_physics var click_mask: int = 1 << 3
 
@@ -13,12 +19,15 @@ var held_item: PickupItem = null
 
 
 func _ready() -> void:
+	hp = max_hp
 	if config == null:
 		config = PlayerConfig.new()
 	interaction_detector.body_entered.connect(_on_detector_body_entered)
 	interaction_detector.body_exited.connect(_on_detector_body_exited)
 
 func _physics_process(delta: float) -> void:
+	if damage_invincible_timer > 0.0:
+		damage_invincible_timer = maxf(0.0, damage_invincible_timer - delta)
 
 	_apply_horizontal_movement()
 	_apply_vertical_movement(delta)
@@ -113,3 +122,10 @@ func _on_detector_body_entered(body: Node) -> void:
 
 func _on_detector_body_exited(body: Node) -> void:
 	nearby_interactables.erase(body)
+
+func take_damage(amount: int) -> void:
+	if damage_invincible_timer > 0.0:
+		return
+	hp -= amount
+	damage_invincible_timer = damage_invincible_time
+	print("Player damaged:", amount, " hp=", hp)
