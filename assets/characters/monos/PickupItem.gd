@@ -1,3 +1,4 @@
+@tool
 extends CharacterBody2D
 class_name PickupItem
 
@@ -7,7 +8,13 @@ enum State {
 	THROWN,
 }
 
-@export var item_settings: PickupItemSettings
+@export var item_settings: PickupItemSettings:
+	set(value):
+		_set_item_settings(value)
+	get:
+		return _item_settings
+
+var _item_settings: PickupItemSettings
 @export_flags_2d_physics var world_collision_mask: int = 1
 @export var throw_speed: float = 520.0
 @export_range(0.1, 3.0, 0.1) var throw_weight: float = 1.0
@@ -25,33 +32,50 @@ var _default_clickable_layer: int
 var _throw_start_position: Vector2 = Vector2.ZERO
 var _throw_elapsed: float = 0.0
 
+
+func _set_item_settings(value: PickupItemSettings) -> void:
+	if _item_settings != null and _item_settings.changed.is_connected(_on_item_settings_changed):
+		_item_settings.changed.disconnect(_on_item_settings_changed)
+
+	_item_settings = value
+
+	if _item_settings != null and not _item_settings.changed.is_connected(_on_item_settings_changed):
+		_item_settings.changed.connect(_on_item_settings_changed)
+
+	if is_inside_tree():
+		_apply_item_settings()
+
+func _on_item_settings_changed() -> void:
+	if is_inside_tree():
+		_apply_item_settings()
+
 func _ready() -> void:
 	_apply_item_settings()
 	add_to_group("interactable")
 	_default_clickable_layer = clickable.collision_layer
 
 func _apply_item_settings() -> void:
-	if item_settings == null:
+	if _item_settings == null:
 		return
 
-	if item_settings.texture != null:
-		sprite.texture = item_settings.texture
-	sprite.scale = item_settings.sprite_scale
+	if _item_settings.texture != null:
+		sprite.texture = _item_settings.texture
+	sprite.scale = _item_settings.sprite_scale
 
 	var body_shape := body_collision_shape.shape as RectangleShape2D
 	if body_shape != null:
-		body_shape.size = item_settings.body_shape_size
-	body_collision_shape.scale = item_settings.body_shape_scale
+		body_shape.size = _item_settings.body_shape_size
+	body_collision_shape.scale = _item_settings.body_shape_scale
 
 	var clickable_shape := clickable_collision_shape.shape as RectangleShape2D
 	if clickable_shape != null:
-		clickable_shape.size = item_settings.clickable_shape_size
-	clickable_collision_shape.scale = item_settings.clickable_shape_scale
+		clickable_shape.size = _item_settings.clickable_shape_size
+	clickable_collision_shape.scale = _item_settings.clickable_shape_scale
 
-	world_collision_mask = item_settings.world_collision_mask
-	throw_speed = item_settings.throw_speed
-	throw_weight = item_settings.throw_weight
-	friction = item_settings.friction
+	world_collision_mask = _item_settings.world_collision_mask
+	throw_speed = _item_settings.throw_speed
+	throw_weight = _item_settings.throw_weight
+	friction = _item_settings.friction
 
 func _physics_process(delta: float) -> void:
 	match state:
