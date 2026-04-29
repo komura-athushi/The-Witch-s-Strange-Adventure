@@ -2,6 +2,7 @@
 
 [ext_resource type="Texture2D" uid="uid://ed3vn70c5xel" path="res://assets/characters/monos/taru.png" id="1_dtx2w"]
 [ext_resource type="Script" uid="uid://oof6yk211tt1" path="res://assets/characters/monos/PickupItem.gd" id="1_n3a7r"]
+[ext_resource type="Resource" path="res://assets/characters/monos/PickupItem_taru.tres" id="3_g3qse"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dtx2w"]
 size = Vector2(20, 234)
@@ -11,7 +12,7 @@ size = Vector2(20, 253)
 
 [node name="PickupItem" type="CharacterBody2D" unique_id=2121301379]
 script = ExtResource("1_n3a7r")
-throw_speed = 540.0
+item_settings = ExtResource("3_g3qse")
 
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1423953141]
 texture = ExtResource("1_dtx2w")
