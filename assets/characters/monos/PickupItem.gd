@@ -39,7 +39,6 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	if Engine.is_editor_hint():
 		_bind_item_settings()
-		_apply_item_settings()
 
 func _exit_tree() -> void:
 	_unbind_item_settings()
@@ -85,6 +84,9 @@ func _apply_item_settings() -> void:
 	friction = item_settings.friction
 
 func _physics_process(delta: float) -> void:
+	if Engine.is_editor_hint():
+		return
+
 	match state:
 		State.WORLD:
 			velocity *= friction
