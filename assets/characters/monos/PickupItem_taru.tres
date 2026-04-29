@@ -7,6 +7,7 @@
 script = ExtResource("1_sxk7c")
 texture = ExtResource("2_10ncf")
 sprite_scale = Vector2(1, 1)
+sprite_offset = Vector2(0, 0)
 body_shape_size = Vector2(20, 234)
 body_shape_scale = Vector2(11.719998, 1)
 clickable_shape_size = Vector2(20, 253)

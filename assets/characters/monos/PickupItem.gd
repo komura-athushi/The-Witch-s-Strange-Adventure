@@ -69,6 +69,7 @@ func _apply_item_settings() -> void:
 	if item_settings.texture != null:
 		sprite.texture = item_settings.texture
 	sprite.scale = item_settings.sprite_scale
+	sprite.position = item_settings.sprite_offset
 
 	var body_shape := body_collision_shape.shape as RectangleShape2D
 	if body_shape != null:
