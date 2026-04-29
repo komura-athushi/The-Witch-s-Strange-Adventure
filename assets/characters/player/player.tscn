@@ -33,3 +33,15 @@ position = Vector2(0, -55)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionDetector" unique_id=1449686852]
 shape = SubResource("CircleShape2D_c1sar")
+
+[node name="DamageInvincibleTimer" type="Timer" parent="."]
+one_shot = true
+
+[node name="MockUi" type="CanvasLayer" parent="."]
+
+[node name="HpLabel" type="Label" parent="MockUi"]
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 190.0
+offset_bottom = 40.0
+text = "Player HP: 3"

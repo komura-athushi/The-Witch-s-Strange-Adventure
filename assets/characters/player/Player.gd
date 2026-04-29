@@ -2,21 +2,30 @@ class_name Player
 extends CharacterBody2D
 
 @export var config: PlayerConfig
-
+@export var max_hp: int = 3
+@export var damage_invincible_seconds: float = 3.0
 
 @export_flags_2d_physics var click_mask: int = 1 << 3
 
 @onready var hold_socket: Marker2D = $HoldSocket
 @onready var interaction_detector: Area2D = $InteractionDetector
+@onready var damage_invincible_timer: Timer = $DamageInvincibleTimer
+@onready var hp_label: Label = $MockUi/HpLabel
 var nearby_interactables: Array[Node] = []
 var held_item: PickupItem = null
+var current_hp: int
+var is_damage_invincible: bool = false
 
 
 func _ready() -> void:
 	if config == null:
 		config = PlayerConfig.new()
+	current_hp = max_hp
+	_update_hp_label()
 	interaction_detector.body_entered.connect(_on_detector_body_entered)
 	interaction_detector.body_exited.connect(_on_detector_body_exited)
+	damage_invincible_timer.timeout.connect(_on_damage_invincible_timer_timeout)
+	add_to_group("Player")
 
 func _physics_process(delta: float) -> void:
 
@@ -85,6 +94,23 @@ func throw_held_item(target_global: Vector2) -> void:
 
 func get_hold_position(item_offset: Vector2) -> Vector2:
 	return hold_socket.global_position + item_offset
+
+func receive_damage(amount: int = 1) -> void:
+	if is_damage_invincible:
+		return
+
+	current_hp = max(current_hp - amount, 0)
+	_update_hp_label()
+	is_damage_invincible = true
+	damage_invincible_timer.start(damage_invincible_seconds)
+	modulate = Color(1.0, 0.6, 0.6, 1.0)
+
+func _update_hp_label() -> void:
+	hp_label.text = "Player HP: %d" % current_hp
+
+func _on_damage_invincible_timer_timeout() -> void:
+	is_damage_invincible = false
+	modulate = Color(1.0, 1.0, 1.0, 1.0)
 
 func _get_clicked_interactable(mouse_global: Vector2) -> Node:
 	var params := PhysicsPointQueryParameters2D.new()
