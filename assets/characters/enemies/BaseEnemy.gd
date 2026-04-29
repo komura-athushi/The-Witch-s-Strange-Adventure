@@ -78,6 +78,13 @@ func deal_contact_damage_to_player() -> void:
 			continue
 		if body.is_in_group("Player") and body.has_method("take_damage"):
 			body.take_damage(contact_damage)
+			continue
+
+		if body is PickupItem:
+			var item := body as PickupItem
+			if item.is_damaging_enemy():
+				take_damage(item.get_thrown_damage())
+				item.consume_enemy_hit()
 
 func _get_gravity_value() -> float:
 	return float(ProjectSettings.get_setting("physics/2d/default_gravity"))

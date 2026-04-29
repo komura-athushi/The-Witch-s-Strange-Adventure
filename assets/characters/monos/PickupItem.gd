@@ -11,6 +11,8 @@ enum State {
 @export var throw_speed: float = 520.0
 @export_range(0.1, 3.0, 0.1) var throw_weight: float = 1.0
 @export var friction: float = 0.99
+@export var thrown_damage: int = 1
+@export var min_damage_speed: float = 80.0
 
 
 @onready var clickable: Area2D = $Clickable
@@ -20,6 +22,7 @@ var holder: Player = null
 var _default_clickable_layer: int
 var _throw_start_position: Vector2 = Vector2.ZERO
 var _throw_elapsed: float = 0.0
+var _has_hit_enemy: bool = false
 
 func _ready() -> void:
 	add_to_group("interactable")
@@ -42,6 +45,7 @@ func _physics_process(delta: float) -> void:
 			if is_on_floor():
 				state = State.WORLD
 				clickable.collision_layer = _default_clickable_layer
+				_has_hit_enemy = false
 
 		State.HELD:
 			if holder != null:
@@ -61,6 +65,7 @@ func pick_up(by: Player) -> void:
 	holder = by
 	state = State.HELD
 	velocity = Vector2.ZERO
+	_has_hit_enemy = false
 
 	# 持っている間は地面にもクリックにも反応しない
 	collision_mask = 0
@@ -71,6 +76,7 @@ func drop_to_world(drop_position: Vector2) -> void:
 	global_position = drop_position
 	holder = null
 	state = State.WORLD
+	_has_hit_enemy = false
 
 	collision_mask = world_collision_mask
 	clickable.collision_layer = _default_clickable_layer
@@ -88,6 +94,7 @@ func throw_to(target_global: Vector2) -> void:
 		direction = Vector2.RIGHT
 	_throw_start_position = global_position
 	_throw_elapsed = 0.0
+	_has_hit_enemy = false
 	velocity = direction.normalized() * _get_effective_throw_speed()
 	
 func _get_gravity_value() -> float:
@@ -134,3 +141,16 @@ func _get_throw_force_free_distance() -> float:
 
 func _get_throw_force_blend_distance() -> float:
 	return lerp(220.0, 120.0, _get_weight_ratio())
+
+func is_damaging_enemy() -> bool:
+	return state == State.THROWN and not _has_hit_enemy and velocity.length() >= min_damage_speed
+
+func consume_enemy_hit() -> void:
+	_has_hit_enemy = true
+	state = State.WORLD
+	collision_mask = world_collision_mask
+	clickable.collision_layer = _default_clickable_layer
+	velocity *= 0.2
+
+func get_thrown_damage() -> int:
+	return thrown_damage
