@@ -20,6 +20,8 @@ enum State {
 @export var knockback_force: Vector2 = Vector2(180, -90)
 @export var throwable_min_speed: float = 140.0
 @export_range(0.1, 1.0, 0.05) var throwable_bounce_damping: float = 0.6
+@export var allow_repeat_hits_from_same_throwable: bool = false
+@export var throwable_hit_cooldown: float = 0.0
 
 @onready var body_shape: CollisionShape2D = $CollisionShape2D
 @onready var hitbox: Area2D = $Hitbox
@@ -37,6 +39,7 @@ var _invincible_timer: float = 0.0
 var _fade_timer: float = 0.0
 var _blink_timer: float = 0.0
 var _damaged_end_state: State = State.PATROL
+var _throwable_hit_registry: Dictionary = {}
 
 
 func _ready() -> void:
@@ -49,6 +52,7 @@ func _physics_process(delta: float) -> void:
 	_state_time += delta
 	_update_invincible(delta)
 	_update_state(delta)
+	_prune_throwable_registry(delta)
 	move_and_slide()
 	_update_debug_ui()
 
@@ -166,9 +170,37 @@ func _process_throwable_hit(body: Node) -> void:
 	if throwable.velocity.length() < throwable_min_speed:
 		return
 
+	var throwable_id := throwable.get_instance_id()
+	if not allow_repeat_hits_from_same_throwable and _throwable_hit_registry.has(throwable_id):
+		return
+
+	if allow_repeat_hits_from_same_throwable and throwable_hit_cooldown > 0.0 and _throwable_hit_registry.has(throwable_id):
+		if _throwable_hit_registry[throwable_id] > 0.0:
+			return
+
 	take_damage(1, throwable)
+	_throwable_hit_registry[throwable_id] = throwable_hit_cooldown
+	# 投擲物側も横方向に反転 + 減衰させて跳ね返す（縦速度は維持）
 	throwable.velocity.x *= -1.0
 	throwable.velocity.x *= throwable_bounce_damping
+
+func _prune_throwable_registry(delta: float) -> void:
+	if _throwable_hit_registry.is_empty():
+		return
+
+	if not allow_repeat_hits_from_same_throwable:
+		return
+
+	var to_remove: Array[int] = []
+	for throwable_id in _throwable_hit_registry.keys():
+		var time_left: float = float(_throwable_hit_registry[throwable_id]) - delta
+		if time_left <= 0.0:
+			to_remove.append(throwable_id)
+		else:
+			_throwable_hit_registry[throwable_id] = time_left
+
+	for throwable_id in to_remove:
+		_throwable_hit_registry.erase(throwable_id)
 
 func _update_invincible(delta: float) -> void:
 	if not is_invincible:
