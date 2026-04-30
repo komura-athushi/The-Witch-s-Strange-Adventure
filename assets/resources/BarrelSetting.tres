@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="PickupItemSettings" format=3 uid="uid://epfq75qqwdou"]
+
+[ext_resource type="Script" uid="uid://csxkdoyekik8r" path="res://assets/characters/monos/PickupItemSettings.gd" id="1_sxk7c"]
+[ext_resource type="Texture2D" uid="uid://ed3vn70c5xel" path="res://assets/characters/monos/sprites/Barrel.png" id="2_10ncf"]
+
+[resource]
+script = ExtResource("1_sxk7c")
+texture = ExtResource("2_10ncf")
+body_shape_size = Vector2(20, 20)
+body_shape_scale = Vector2(18, 2.5)
+clickable_shape_size = Vector2(20, 20)
+clickable_shape_scale = Vector2(25, 2.5)
+throw_speed = 540.0

@@ -1,3 +1,4 @@
+@tool
 extends CharacterBody2D
 class_name PickupItem
 
@@ -7,23 +8,83 @@ enum State {
 	THROWN,
 }
 
+@export var item_settings: PickupItemSettings
 @export_flags_2d_physics var world_collision_mask: int = 1
 @export var throw_speed: float = 520.0
 @export_range(0.1, 3.0, 0.1) var throw_weight: float = 1.0
 @export var friction: float = 0.99
 
 
+@onready var sprite: Sprite2D = $Sprite2D
+@onready var body_collision_shape: CollisionShape2D = $CollisionShape2D
 @onready var clickable: Area2D = $Clickable
+@onready var clickable_collision_shape: CollisionShape2D = $Clickable/CollisionShape2D
 
 var state: State = State.WORLD
 var holder: Player = null
 var _default_clickable_layer: int
 var _throw_start_position: Vector2 = Vector2.ZERO
 var _throw_elapsed: float = 0.0
+var _bound_settings: PickupItemSettings
+
+func _enter_tree() -> void:
+	_bind_item_settings()
 
 func _ready() -> void:
+	_bind_item_settings()
+	_apply_item_settings()
+	set_physics_process(not Engine.is_editor_hint())
 	add_to_group("interactable")
 	_default_clickable_layer = clickable.collision_layer
+
+func _process(_delta: float) -> void:
+	if Engine.is_editor_hint():
+		_bind_item_settings()
+		_apply_item_settings()
+
+func _exit_tree() -> void:
+	_unbind_item_settings()
+
+func _bind_item_settings() -> void:
+	if _bound_settings == item_settings:
+		return
+
+	_unbind_item_settings()
+	_bound_settings = item_settings
+	if _bound_settings != null and not _bound_settings.changed.is_connected(_on_item_settings_changed):
+		_bound_settings.changed.connect(_on_item_settings_changed)
+
+func _unbind_item_settings() -> void:
+	if _bound_settings != null and _bound_settings.changed.is_connected(_on_item_settings_changed):
+		_bound_settings.changed.disconnect(_on_item_settings_changed)
+	_bound_settings = null
+
+func _on_item_settings_changed() -> void:
+	_apply_item_settings()
+
+func _apply_item_settings() -> void:
+	if item_settings == null:
+		return
+
+	if item_settings.texture != null:
+		sprite.texture = item_settings.texture
+	sprite.scale = item_settings.sprite_scale
+	sprite.position = item_settings.sprite_offset
+
+	var body_shape := body_collision_shape.shape as RectangleShape2D
+	if body_shape != null:
+		body_shape.size = item_settings.body_shape_size
+	body_collision_shape.scale = item_settings.body_shape_scale
+
+	var clickable_shape := clickable_collision_shape.shape as RectangleShape2D
+	if clickable_shape != null:
+		clickable_shape.size = item_settings.clickable_shape_size
+	clickable_collision_shape.scale = item_settings.clickable_shape_scale
+
+	world_collision_mask = item_settings.world_collision_mask
+	throw_speed = item_settings.throw_speed
+	throw_weight = item_settings.throw_weight
+	friction = item_settings.friction
 
 func _physics_process(delta: float) -> void:
 	match state:
