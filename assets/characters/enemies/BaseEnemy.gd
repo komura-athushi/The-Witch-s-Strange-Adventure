@@ -109,6 +109,11 @@ func _update_state(delta: float) -> void:
 		State.PATROL:
 			velocity.x = facing * move_speed
 			velocity.y += _get_gravity_value() * delta
+			# 前方が障害物で詰まっていても巡回タイマーは進行させる
+			# （move_and_slide 後に速度が0になっても state_time によって必ず遷移する）
+			if is_on_wall() and _state_time >= patrol_duration:
+				change_state(State.WAIT)
+				return
 			if _state_time >= patrol_duration:
 				change_state(State.WAIT)
 
