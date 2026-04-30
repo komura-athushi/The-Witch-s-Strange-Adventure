@@ -23,6 +23,7 @@ var _throw_elapsed: float = 0.0
 
 func _ready() -> void:
 	add_to_group("interactable")
+	add_to_group("Throwable")
 	_default_clickable_layer = clickable.collision_layer
 
 func _physics_process(delta: float) -> void:

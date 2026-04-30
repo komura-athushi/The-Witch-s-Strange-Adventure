@@ -13,6 +13,7 @@ var held_item: PickupItem = null
 
 
 func _ready() -> void:
+	add_to_group("Player")
 	if config == null:
 		config = PlayerConfig.new()
 	interaction_detector.body_entered.connect(_on_detector_body_entered)

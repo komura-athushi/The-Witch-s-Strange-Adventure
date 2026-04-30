@@ -1,0 +1,22 @@
+[gd_scene format=3]
+
+[ext_resource type="PackedScene" path="res://assets/characters/player/player.tscn" id="1"]
+[ext_resource type="PackedScene" path="res://assets/characters/backgrounds/tests/BackGroundTest.tscn" id="2"]
+[ext_resource type="PackedScene" path="res://assets/characters/monos/PickupItem.tscn" id="3"]
+[ext_resource type="PackedScene" path="res://assets/characters/enemies/BaseEnemy.tscn" id="4"]
+
+[node name="BaseEnemyTest" type="Node2D"]
+
+[node name="BackGroundTest" parent="." instance=ExtResource("2")]
+position = Vector2(0, 83)
+scale = Vector2(10.120002, 0.56)
+
+[node name="Player" parent="." instance=ExtResource("1")]
+position = Vector2(0, 20)
+
+[node name="PickupItem" parent="." instance=ExtResource("3")]
+position = Vector2(130, 23)
+scale = Vector2(0.14230613, 0.18575664)
+
+[node name="BaseEnemy" parent="." instance=ExtResource("4")]
+position = Vector2(260, 22)
