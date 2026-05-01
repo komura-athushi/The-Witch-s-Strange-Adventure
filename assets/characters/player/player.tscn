@@ -51,6 +51,7 @@ height = 29.51807
 radius = 63.28507
 
 [node name="Player" type="CharacterBody2D" unique_id=2082198171]
+collision_layer = 2
 script = ExtResource("1_prble")
 config = ExtResource("2_c1sar")
 
@@ -68,9 +69,11 @@ shape = SubResource("CapsuleShape2D_prble")
 position = Vector2(0, -62)
 
 [node name="HoldSocket" type="Marker2D" parent="." unique_id=1729694090]
-position = Vector2(0, -55)
+position = Vector2(0, -33)
 
 [node name="InteractionDetector" type="Area2D" parent="." unique_id=1279889132]
+collision_layer = 0
+collision_mask = 4
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionDetector" unique_id=1449686852]
 shape = SubResource("CircleShape2D_c1sar")
