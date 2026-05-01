@@ -55,7 +55,9 @@ collision_layer = 2
 script = ExtResource("1_prble")
 config = ExtResource("2_c1sar")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=346901509]
+[node name="Visual" type="Node2D" parent="." unique_id=156133951]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Visual" unique_id=346901509]
 position = Vector2(4, -3)
 scale = Vector2(0.22, 0.22)
 sprite_frames = SubResource("SpriteFrames_xfu5q")
