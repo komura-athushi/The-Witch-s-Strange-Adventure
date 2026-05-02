@@ -22,7 +22,7 @@ enum State {
 @onready var hit_area: Area2D = $HitArea
 @onready var hit_collision: CollisionShape2D = $HitArea/CollisionShape2D
 @onready var sprite: Sprite2D = $Sprite2D
-@onready var debug_label: Label = $DebugLabel
+@onready var debug_label: Label = get_node_or_null("DebugLabel") as Label
 
 var state: State = State.PATROL
 var hp: int = 0
@@ -157,6 +157,8 @@ func _update_visuals() -> void:
 		sprite.modulate = Color(1.0, 1.0, 1.0, 1.0)
 
 func _update_debug_label() -> void:
+	if debug_label == null:
+		return
 	debug_label.text = "%s | HP:%d" % [_state_name(state), hp]
 
 func _state_name(value: State) -> String:
