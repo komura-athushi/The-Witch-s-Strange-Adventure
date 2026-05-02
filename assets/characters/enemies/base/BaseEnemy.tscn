@@ -1,0 +1,41 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://assets/characters/enemies/base/BaseEnemy.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://assets/characters/monos/sprites/Pebble.png" id="2_texture"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_body"]
+radius = 10.0
+height = 24.0
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_hit"]
+size = Vector2(22, 28)
+
+[node name="BaseEnemy" type="CharacterBody2D"]
+script = ExtResource("1_script")
+collision_layer = 4
+collision_mask = 1
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+texture = ExtResource("2_texture")
+position = Vector2(0, -14)
+scale = Vector2(1.4, 1.4)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -14)
+shape = SubResource("CapsuleShape2D_body")
+
+[node name="HitArea" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 3
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HitArea"]
+position = Vector2(0, -14)
+shape = SubResource("RectangleShape2D_hit")
+
+[node name="DebugLabel" type="Label" parent="."]
+offset_left = -60.0
+offset_top = -52.0
+offset_right = 60.0
+offset_bottom = -20.0
+horizontal_alignment = 1
+text = "PATROL | HP:3"
