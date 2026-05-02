@@ -1,30 +1,33 @@
 [gd_scene format=3]
 
 [ext_resource type="PackedScene" path="res://assets/characters/enemies/base/BaseEnemy.tscn" id="1_enemy"]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_ground"]
-size = Vector2(800, 32)
+[ext_resource type="PackedScene" path="res://assets/characters/player/player.tscn" id="2_player"]
+[ext_resource type="PackedScene" path="res://assets/characters/backgrounds/tests/BackGroundTest.tscn" id="3_platform"]
+[ext_resource type="PackedScene" path="res://assets/characters/monos/PickupItem.tscn" id="4_pickup"]
+[ext_resource type="Resource" path="res://assets/resources/PebbleSetting.tres" id="5_pebble_setting"]
 
 [node name="BaseEnemyTest" type="Node2D"]
 
-[node name="Enemy" parent="." instance=ExtResource("1_enemy")]
-position = Vector2(420, 260)
-move_speed = 70.0
+[node name="BackGroundTest" parent="." instance=ExtResource("3_platform")]
+position = Vector2(0, 83)
+scale = Vector2(10.120002, 0.56)
 
-[node name="Ground" type="StaticBody2D" parent="."]
-position = Vector2(400, 320)
+[node name="Player" parent="." instance=ExtResource("2_player")]
+position = Vector2(0, 20)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Ground"]
-shape = SubResource("RectangleShape2D_ground")
+[node name="Pebble" parent="." instance=ExtResource("4_pickup")]
+position = Vector2(272, 24)
+scale = Vector2(0.14230613, 0.18575664)
+item_settings = ExtResource("5_pebble_setting")
+throw_weight = 0.7
 
-[node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(400, 220)
-enabled = true
-position_smoothing_enabled = false
+[node name="BaseEnemy" parent="." instance=ExtResource("1_enemy")]
+position = Vector2(460, 20)
+move_speed = 40.0
 
 [node name="GuideLabel" type="Label" parent="."]
-offset_left = 16.0
-offset_top = 16.0
-offset_right = 390.0
-offset_bottom = 40.0
-text = "BaseEnemy Test: patrol/wait loop on fixed camera"
+offset_left = -220.0
+offset_top = -48.0
+offset_right = 520.0
+offset_bottom = -16.0
+text = "Stage-like test: pick Pebble with click, then click again to throw at BaseEnemy"
