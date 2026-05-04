@@ -13,6 +13,11 @@ enum State {
 @export var throw_speed: float = 520.0
 @export_range(0.1, 3.0, 0.1) var throw_weight: float = 1.0
 @export var friction: float = 0.99
+@export_group("Held Floating")
+@export var held_float_enabled: bool = true
+@export_range(0.0, 32.0, 0.5) var held_float_amplitude: float = 5.0
+@export_range(0.1, 12.0, 0.1) var held_float_speed: float = 3.0
+@export_range(0.0, 30.0, 0.5) var held_float_tilt_degrees: float = 6.0
 
 
 @onready var sprite: Sprite2D = $Sprite2D
@@ -25,6 +30,8 @@ var holder: Player = null
 var _default_clickable_layer: int
 var _throw_start_position: Vector2 = Vector2.ZERO
 var _throw_elapsed: float = 0.0
+var _held_float_elapsed: float = 0.0
+var _world_z_index: int = 0
 var _bound_settings: PickupItemSettings
 
 func _enter_tree() -> void:
@@ -36,6 +43,7 @@ func _ready() -> void:
 	set_physics_process(not Engine.is_editor_hint())
 	add_to_group("interactable")
 	_default_clickable_layer = clickable.collision_layer
+	_world_z_index = z_index
 
 func _process(_delta: float) -> void:
 	if Engine.is_editor_hint():
@@ -106,7 +114,9 @@ func _physics_process(delta: float) -> void:
 
 		State.HELD:
 			if holder != null:
-				global_position = holder.get_hold_position(Vector2.ZERO)
+				_held_float_elapsed += delta
+				global_position = holder.get_hold_position(_get_held_offset() + _get_held_float_offset())
+				sprite.rotation = _get_held_float_rotation()
 			velocity = Vector2.ZERO
 
 func can_interact(actor: Node) -> bool:
@@ -122,27 +132,33 @@ func pick_up(by: Player) -> void:
 	holder = by
 	state = State.HELD
 	velocity = Vector2.ZERO
+	_held_float_elapsed = 0.0
+	_world_z_index = z_index
 
 	# 持っている間は地面にもクリックにも反応しない
 	collision_mask = 0
 	clickable.collision_layer = 0
-	z_index = 10
+	z_index = by.z_index + 1
 
 func drop_to_world(drop_position: Vector2) -> void:
 	global_position = drop_position
 	holder = null
 	state = State.WORLD
+	_held_float_elapsed = 0.0
+	sprite.rotation = 0.0
 
 	collision_mask = world_collision_mask
 	clickable.collision_layer = _default_clickable_layer
-	z_index = 0
+	z_index = _world_z_index
 
 func throw_to(target_global: Vector2) -> void:
 	holder = null
 	state = State.THROWN
+	_held_float_elapsed = 0.0
+	sprite.rotation = 0.0
 	collision_mask = world_collision_mask
 	clickable.collision_layer = 0
-	z_index = 0
+	z_index = _world_z_index
 
 	var direction := target_global - global_position
 	if direction.length() < 1.0:
@@ -153,6 +169,24 @@ func throw_to(target_global: Vector2) -> void:
 	
 func _get_gravity_value() -> float:
 	return float(ProjectSettings.get_setting("physics/2d/default_gravity"))
+
+func _get_held_offset() -> Vector2:
+	return Vector2(0.0, -_get_visual_height() * 0.5)
+
+func _get_held_float_offset() -> Vector2:
+	if not held_float_enabled:
+		return Vector2.ZERO
+	return Vector2(0.0, sin(_held_float_elapsed * held_float_speed) * held_float_amplitude)
+
+func _get_held_float_rotation() -> float:
+	if not held_float_enabled:
+		return 0.0
+	return deg_to_rad(sin(_held_float_elapsed * held_float_speed * 0.7) * held_float_tilt_degrees)
+
+func _get_visual_height() -> float:
+	if sprite.texture == null:
+		return 0.0
+	return sprite.texture.get_height() * abs(sprite.global_scale.y)
 
 func _get_throw_force_factor() -> float:
 	var time_factor := _get_blend_factor(
