@@ -3,16 +3,15 @@ extends CharacterBody2D
 
 @export var config: PlayerConfig
 
-
 @export_flags_2d_physics var click_mask: int = 1 << 3
 
 @onready var hold_socket: Marker2D = $HoldSocket
 @onready var interaction_detector: Area2D = $InteractionDetector
 @onready var visual: Node2D = $Visual
 @onready var sprite2D = $Visual/AnimatedSprite2D
+@onready var throw_prediction_line: ThrowPredictionLine = $ThrowPredictionLine
 var nearby_interactables: Array[Node] = []
 var held_item: PickupItem = null
-
 
 var ANIM_THRESHOLD = 5.0
 
@@ -23,21 +22,17 @@ func _ready() -> void:
 	interaction_detector.body_exited.connect(_on_detector_body_exited)
 
 func _physics_process(delta: float) -> void:
-
 	_apply_horizontal_movement()
 	_apply_vertical_movement(delta)
-	
-	# アニメーション更新
+
 	_update_animation()
-	# 向き更新
 	_update_direction(velocity.x)
 
 	move_and_slide()
-	
-func _update_animation():
+
+func _update_animation() -> void:
 	if abs(velocity.x) > ANIM_THRESHOLD:
 		sprite2D.animation = "walk"
-
 		sprite2D.play()
 	else:
 		sprite2D.stop()
@@ -48,12 +43,10 @@ func _update_direction(direction_x: float) -> void:
 	elif direction_x > 0:
 		visual.scale.x = 1
 
-# 横移動
 func _apply_horizontal_movement() -> void:
 	var axis = Input.get_axis("move_left", "move_right")
 	velocity.x = axis * config.move_speed
 
-# 縦移動
 func _apply_vertical_movement(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y += _get_gravity_value() * delta
@@ -67,15 +60,12 @@ func _get_gravity_value() -> float:
 		return float(ProjectSettings.get_setting("physics/2d/default_gravity"))
 	return config.gravity
 
-
-
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton \
 	and event.button_index == MOUSE_BUTTON_LEFT \
 	and event.pressed:
-
 		var mouse_global := get_global_mouse_position()
-		
+
 		if held_item == null:
 			var target := _get_clicked_interactable(mouse_global)
 			if target != null and target.has_method("interact"):
@@ -89,6 +79,7 @@ func pick_item(item: PickupItem) -> void:
 
 	held_item = item
 	item.pick_up(self)
+	throw_prediction_line.set_target_item(item)
 
 func release_held_item() -> void:
 	if held_item == null:
@@ -96,6 +87,7 @@ func release_held_item() -> void:
 
 	var item := held_item
 	held_item = null
+	throw_prediction_line.clear_target_item()
 	item.drop_to_world(hold_socket.global_position)
 
 func throw_held_item(target_global: Vector2) -> void:
@@ -104,6 +96,7 @@ func throw_held_item(target_global: Vector2) -> void:
 
 	var item := held_item
 	held_item = null
+	throw_prediction_line.clear_target_item()
 	item.throw_to(target_global)
 
 func get_hold_position(item_offset: Vector2) -> Vector2:

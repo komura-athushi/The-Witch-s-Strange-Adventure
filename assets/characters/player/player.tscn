@@ -10,6 +10,7 @@
 [ext_resource type="Texture2D" uid="uid://bma1vo3ychd2q" path="res://assets/characters/player/sprites/animations/walk/player_walk7.png" id="8_pgyqb"]
 [ext_resource type="Texture2D" uid="uid://dijm8x6k4cbms" path="res://assets/characters/player/sprites/animations/walk/player_walk6.png" id="9_nom8i"]
 [ext_resource type="Texture2D" uid="uid://4t87pltdoit8" path="res://assets/characters/player/sprites/animations/walk/player_walk8.png" id="10_d3f0l"]
+[ext_resource type="Script" uid="uid://e3gplrn5ng20" path="res://assets/characters/player/ThrowPredictionLine.gd" id="11_q773n"]
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_xfu5q"]
 animations = [{
@@ -72,6 +73,10 @@ position = Vector2(0, -62)
 
 [node name="HoldSocket" type="Marker2D" parent="." unique_id=1729694090]
 position = Vector2(0, -33)
+
+[node name="ThrowPredictionLine" type="Node2D" parent="." unique_id=552425642]
+z_index = 20
+script = ExtResource("11_q773n")
 
 [node name="InteractionDetector" type="Area2D" parent="." unique_id=1279889132]
 collision_layer = 0

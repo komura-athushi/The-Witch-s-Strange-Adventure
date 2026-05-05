@@ -19,7 +19,6 @@ enum State {
 @export_range(0.1, 12.0, 0.1) var held_float_speed: float = 3.0
 @export_range(0.0, 30.0, 0.5) var held_float_tilt_degrees: float = 6.0
 
-
 @onready var sprite: Sprite2D = $Sprite2D
 @onready var body_collision_shape: CollisionShape2D = $CollisionShape2D
 @onready var clickable: Area2D = $Clickable
@@ -135,7 +134,7 @@ func pick_up(by: Player) -> void:
 	_held_float_elapsed = 0.0
 	_world_z_index = z_index
 
-	# 持っている間は地面にもクリックにも反応しない
+	# Held items should not collide with the world or respond to clicks.
 	collision_mask = 0
 	clickable.collision_layer = 0
 	z_index = by.z_index + 1
@@ -166,7 +165,10 @@ func throw_to(target_global: Vector2) -> void:
 	_throw_start_position = global_position
 	_throw_elapsed = 0.0
 	velocity = direction.normalized() * _get_effective_throw_speed()
-	
+
+func get_throw_straight_distance() -> float:
+	return minf(_get_throw_force_free_distance(), _get_effective_throw_speed() * _get_throw_force_free_time())
+
 func _get_gravity_value() -> float:
 	return float(ProjectSettings.get_setting("physics/2d/default_gravity"))
 
@@ -200,7 +202,7 @@ func _get_throw_force_factor() -> float:
 		_get_throw_force_free_distance(),
 		_get_throw_force_blend_distance()
 	)
-	return max(time_factor, distance_factor)
+	return maxf(time_factor, distance_factor)
 
 func _get_blend_factor(progress: float, free_zone: float, blend_zone: float) -> float:
 	if progress <= free_zone:
@@ -210,22 +212,22 @@ func _get_blend_factor(progress: float, free_zone: float, blend_zone: float) -> 
 	return clamp((progress - free_zone) / blend_zone, 0.0, 1.0)
 
 func _get_weight_ratio() -> float:
-	return clamp((throw_weight - 1.0) / 1.8, 0.0, 1.0)
+	return inverse_lerp(0.1, 3.0, clampf(throw_weight, 0.1, 3.0))
 
 func _get_effective_throw_speed() -> float:
-	return throw_speed / sqrt(max(throw_weight, 0.1))
+	return throw_speed / sqrt(maxf(throw_weight, 0.1))
 
 func _get_throw_air_drag() -> float:
 	return lerp(1.6, 2.8, _get_weight_ratio())
 
 func _get_throw_force_free_time() -> float:
-	return lerp(0.18, 0.07, _get_weight_ratio())
+	return lerp(0.24, 0.11, _get_weight_ratio())
 
 func _get_throw_force_blend_time() -> float:
 	return lerp(0.42, 0.2, _get_weight_ratio())
 
 func _get_throw_force_free_distance() -> float:
-	return lerp(190.0, 80.0, _get_weight_ratio())
+	return lerp(230.0, 115.0, _get_weight_ratio())
 
 func _get_throw_force_blend_distance() -> float:
 	return lerp(220.0, 120.0, _get_weight_ratio())
