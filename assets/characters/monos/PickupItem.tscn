@@ -5,10 +5,8 @@
 [ext_resource type="Resource" uid="uid://epfq75qqwdou" path="res://assets/resources/BarrelSetting.tres" id="3_g3qse"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dtx2w"]
-size = Vector2(13, 100)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_n3a7r"]
-size = Vector2(10, 100)
 
 [node name="PickupItem" type="CharacterBody2D" unique_id=2121301379]
 collision_layer = 4
@@ -19,15 +17,37 @@ throw_speed = 540.0
 [node name="Sprite2D" type="Sprite2D" parent="." unique_id=1423953141]
 texture = ExtResource("1_dtx2w")
 
+[node name="InteractionOutline" type="Line2D" parent="."]
+visible = false
+z_index = 19
+width = 3.0
+default_color = Color(1, 0.92, 0, 1)
+closed = true
+
+[node name="InteractionMarker" type="Node2D" parent="."]
+visible = false
+z_index = 20
+
+[node name="Polygon2D" type="Polygon2D" parent="InteractionMarker"]
+color = Color(1, 0.9, 0.05, 1)
+polygon = PackedVector2Array(0, 0, -7, -10, 7, -10)
+
+[node name="Line2D" type="Line2D" parent="InteractionMarker"]
+width = 2.0
+default_color = Color(0.12, 0.08, 0, 1)
+closed = true
+points = PackedVector2Array(0, 0, -7, -10, 7, -10)
+
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=635102177]
 position = Vector2(0, -1)
 scale = Vector2(18, 2.5)
 shape = SubResource("RectangleShape2D_dtx2w")
 
-[node name="Clickable" type="Area2D" parent="." unique_id=236521259]
+[node name="InteractionArea" type="Area2D" parent="." unique_id=236521259]
 collision_layer = 8
+collision_mask = 16
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Clickable" unique_id=1297204461]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="InteractionArea" unique_id=1297204461]
 position = Vector2(0, 0.5)
 scale = Vector2(25, 2.5)
 shape = SubResource("RectangleShape2D_n3a7r")
