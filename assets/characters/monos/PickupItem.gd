@@ -2,6 +2,8 @@
 extends CharacterBody2D
 class_name PickupItem
 
+signal interaction_availability_changed(item: PickupItem)
+
 enum State {
 	WORLD,
 	HELD,
@@ -14,7 +16,7 @@ enum State {
 @export var throw_speed: float = 520.0
 @export_range(0.1, 3.0, 0.1) var throw_weight: float = 1.0
 @export var attack_power: int = 1
-@export var thrown_stop_speed: float = 20.0
+@export var thrown_stop_speed: float = 10.0
 @export var friction: float = 0.99
 @export_group("Interaction Feedback")
 @export var interaction_outline_color: Color = Color(1.0, 0.92, 0.0, 1.0)
@@ -125,6 +127,8 @@ func _physics_process(delta: float) -> void:
 			var drag_factor := exp(-_get_throw_air_drag() * throw_force_factor * delta)
 			velocity *= drag_factor
 			velocity.y += _get_gravity_value() * throw_force_factor * delta
+			if absf(velocity.x) <= thrown_stop_speed:
+				velocity.x = 0.0
 			move_and_slide()
 			_damage_overlapping_enemies()
 			if is_on_floor() and velocity.length() <= thrown_stop_speed:
@@ -165,6 +169,7 @@ func pick_up(by: Player) -> void:
 	interaction_area.collision_layer = 0
 	set_interaction_highlighted(false)
 	z_index = by.z_index + 1
+	interaction_availability_changed.emit(self)
 
 func drop_to_world(drop_position: Vector2) -> void:
 	global_position = drop_position
@@ -177,6 +182,7 @@ func drop_to_world(drop_position: Vector2) -> void:
 	interaction_area.collision_layer = _default_interaction_layer
 	set_interaction_highlighted(false)
 	z_index = _world_z_index
+	interaction_availability_changed.emit(self)
 
 func throw_to(target_global: Vector2) -> void:
 	holder = null
@@ -189,6 +195,7 @@ func throw_to(target_global: Vector2) -> void:
 	interaction_area.monitoring = true
 	set_interaction_highlighted(false)
 	z_index = _world_z_index
+	interaction_availability_changed.emit(self)
 
 	var direction := target_global - global_position
 	if direction.length() < 1.0:
@@ -250,6 +257,7 @@ func _reflect_x_from(source_position: Vector2) -> void:
 func _return_to_world_state() -> void:
 	state = State.WORLD
 	interaction_area.collision_layer = _default_interaction_layer
+	interaction_availability_changed.emit(self)
 
 func _get_gravity_value() -> float:
 	return float(ProjectSettings.get_setting("physics/2d/default_gravity"))
@@ -257,7 +265,6 @@ func _get_gravity_value() -> float:
 func _process_interaction_feedback(delta: float) -> void:
 	if not _is_interaction_highlighted or state != State.WORLD or holder != null:
 		_update_interaction_outline(false, 0.0)
-		_update_interaction_marker(false, 0.0)
 		return
 
 	_highlight_elapsed += delta

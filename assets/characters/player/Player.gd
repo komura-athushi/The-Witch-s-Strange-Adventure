@@ -166,13 +166,35 @@ func _on_detector_body_entered(body: Node) -> void:
 	if body.is_in_group("interactable"):
 		if not nearby_interactables.has(body):
 			nearby_interactables.append(body)
+		_connect_interactable_signals(body)
 	_refresh_nearby_interaction_highlights()
 
 func _on_detector_body_exited(body: Node) -> void:
 	nearby_interactables.erase(body)
+	_disconnect_interactable_signals(body)
 	if body.has_method("set_interaction_highlighted"):
 		body.set_interaction_highlighted(false)
 	_refresh_nearby_interaction_highlights()
+
+func _connect_interactable_signals(interactable: Node) -> void:
+	if not interactable.has_signal("interaction_availability_changed"):
+		return
+
+	var callback := Callable(self, "_on_interactable_availability_changed")
+	if not interactable.is_connected("interaction_availability_changed", callback):
+		interactable.connect("interaction_availability_changed", callback)
+
+func _disconnect_interactable_signals(interactable: Node) -> void:
+	if not interactable.has_signal("interaction_availability_changed"):
+		return
+
+	var callback := Callable(self, "_on_interactable_availability_changed")
+	if interactable.is_connected("interaction_availability_changed", callback):
+		interactable.disconnect("interaction_availability_changed", callback)
+
+func _on_interactable_availability_changed(interactable: Node) -> void:
+	if interactable in nearby_interactables:
+		_refresh_nearby_interaction_highlights()
 
 func _refresh_nearby_interaction_highlights() -> void:
 	for interactable in nearby_interactables:
