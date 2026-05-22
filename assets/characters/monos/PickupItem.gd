@@ -272,12 +272,12 @@ func _process_interaction_feedback(delta: float) -> void:
 	_update_interaction_outline(true, pulse)
 	_update_interaction_marker(true, pulse)
 
-func _update_interaction_outline(visible: bool, pulse: float) -> void:
+func _update_interaction_outline(should_show: bool, pulse: float) -> void:
 	if interaction_outline == null:
 		return
 
-	interaction_outline.visible = visible
-	if not visible:
+	interaction_outline.visible = should_show
+	if not should_show:
 		return
 
 	var rect := _get_local_visual_rect()
@@ -292,12 +292,12 @@ func _update_interaction_outline(visible: bool, pulse: float) -> void:
 		Vector2(outline_rect.position.x, outline_rect.end.y),
 	])
 
-func _update_interaction_marker(visible: bool, pulse: float) -> void:
+func _update_interaction_marker(should_show: bool, pulse: float) -> void:
 	if interaction_marker == null:
 		return
 
-	interaction_marker.visible = visible
-	if not visible:
+	interaction_marker.visible = should_show
+	if not should_show:
 		return
 
 	var safe_global_scale := Vector2(

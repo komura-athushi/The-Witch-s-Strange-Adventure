@@ -1,11 +1,67 @@
 [gd_scene format=3 uid="uid://bdjku5w3w2ltw"]
 
 [ext_resource type="Script" uid="uid://npyumfaa5r3v" path="res://assets/characters/enemies/Wolf.gd" id="1_wolf"]
-[ext_resource type="Texture2D" uid="uid://boe0xmk1f7few" path="res://assets/characters/enemies/sprites/wolf_test.png" id="2_wolf"]
+[ext_resource type="Texture2D" uid="uid://lql8djd28ul5" path="res://assets/characters/enemies/sprites/animations/wolf/idle/idle1.png" id="2_ux4kk"]
+[ext_resource type="Texture2D" uid="uid://d3pf4pglnwpq0" path="res://assets/characters/enemies/sprites/animations/wolf/idle/idle2.png" id="3_anw62"]
+[ext_resource type="Texture2D" uid="uid://cpq6m170v0pnh" path="res://assets/characters/enemies/sprites/animations/wolf/idle/idle3.png" id="4_qjwxt"]
+[ext_resource type="Texture2D" uid="uid://d1n0xm8ggw80k" path="res://assets/characters/enemies/sprites/animations/wolf/idle/idle4.png" id="5_g84qo"]
+[ext_resource type="Texture2D" uid="uid://biwhyb1dutyaq" path="res://assets/characters/enemies/sprites/animations/wolf/walk/walk1.png" id="6_127sc"]
+[ext_resource type="Texture2D" uid="uid://cxjjim8kqinm3" path="res://assets/characters/enemies/sprites/animations/wolf/walk/walk2.png" id="7_jjndh"]
+[ext_resource type="Texture2D" uid="uid://dcq4jn0qlryky" path="res://assets/characters/enemies/sprites/animations/wolf/walk/walk3.png" id="8_0k6ly"]
+[ext_resource type="Texture2D" uid="uid://x7jxp1ugi5kd" path="res://assets/characters/enemies/sprites/animations/wolf/walk/walk4.png" id="9_acdwv"]
+[ext_resource type="Texture2D" uid="uid://ckuwns521ja11" path="res://assets/characters/enemies/sprites/animations/wolf/walk/walk5.png" id="10_v5vy0"]
+[ext_resource type="Texture2D" uid="uid://cyul2uggdvanq" path="res://assets/characters/enemies/sprites/animations/wolf/walk/walk7.png" id="11_i61lu"]
+[ext_resource type="Texture2D" uid="uid://4ay3r13hr37m" path="res://assets/characters/enemies/sprites/animations/wolf/walk/walk6.png" id="12_uf5we"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_t4v1l"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_ux4kk")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_anw62")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_qjwxt")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_g84qo")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("6_127sc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_jjndh")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_0k6ly")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_acdwv")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_v5vy0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_i61lu")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_uf5we")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 6.0
+}]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_wolf_body"]
 radius = 13.0
-height = 34.0
+height = 30.952393
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_player_contact"]
 radius = 16.0
@@ -17,13 +73,16 @@ script = ExtResource("1_wolf")
 
 [node name="Visual" type="Node2D" parent="." unique_id=619563700]
 
-[node name="Sprite2D" type="Sprite2D" parent="Visual" unique_id=569625441]
-position = Vector2(0, -10)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("2_wolf")
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Visual" unique_id=553469248]
+position = Vector2(0, -2)
+scale = Vector2(0.8958333, 0.8939394)
+sprite_frames = SubResource("SpriteFrames_t4v1l")
+animation = &"walk"
+frame = 1
+frame_progress = 0.23628403
+speed_scale = 1.2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1466586243]
-position = Vector2(0, -8)
 scale = Vector2(1.52, 0.8399997)
 shape = SubResource("CapsuleShape2D_wolf_body")
 
@@ -32,6 +91,6 @@ collision_layer = 0
 collision_mask = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerContactArea" unique_id=1733237899]
-position = Vector2(0, -7)
+position = Vector2(0, 7.1054274e-15)
 scale = Vector2(1.0800003, 0.7199991)
 shape = SubResource("CapsuleShape2D_player_contact")
