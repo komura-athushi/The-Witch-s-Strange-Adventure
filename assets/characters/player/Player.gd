@@ -24,6 +24,7 @@ var ANIM_THRESHOLD = 5.0
 func _ready() -> void:
 	if config == null:
 		config = PlayerConfig.new()
+	sprite2D.sprite_frames.set_animation_loop(&"jump", false)
 	current_hp = hp
 	interaction_detector.body_entered.connect(_on_detector_body_entered)
 	interaction_detector.body_exited.connect(_on_detector_body_exited)
@@ -41,6 +42,9 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 
 func _update_animation() -> void:
+	if not is_on_floor() or velocity.y < 0.0:
+		return
+
 	if abs(velocity.x) > ANIM_THRESHOLD:
 		sprite2D.animation = "walk"
 		sprite2D.play()
@@ -64,6 +68,12 @@ func _apply_vertical_movement(delta: float) -> void:
 
 	if Input.is_action_just_pressed("jump"):
 		velocity.y = config.jump_velocity
+		_play_jump_animation()
+
+func _play_jump_animation() -> void:
+	sprite2D.animation = &"jump"
+	sprite2D.frame = 0
+	sprite2D.play()
 
 func _get_gravity_value() -> float:
 	if config.use_project_gravity:
