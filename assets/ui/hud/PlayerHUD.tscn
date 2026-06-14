@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://g65iyxudhyo6"]
+
+[ext_resource type="Script" uid="uid://b7hvib7q57p4f" path="res://assets/ui/hud/PlayerHUD.gd" id="1_hud"]
+[ext_resource type="Script" uid="uid://c1adnoui062r8" path="res://assets/ui/hud/HeartHealthDisplay.gd" id="2_health"]
+[ext_resource type="Texture2D" uid="uid://dxdbspl65qq2m" path="res://assets/ui/hud/sprites/heart.png" id="3_6oduw"]
+
+[node name="PlayerHUD" type="CanvasLayer" unique_id=1540836736]
+layer = 10
+script = ExtResource("1_hud")
+
+[node name="HealthDisplay" type="HBoxContainer" parent="." unique_id=1642239375]
+mouse_filter = 2
+script = ExtResource("2_health")
+heart_texture = ExtResource("3_6oduw")
+heart_size = Vector2(32, 32)

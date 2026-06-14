@@ -1,0 +1,14 @@
+[gd_scene format=3 uid="uid://b1efd53s27fp6"]
+
+[ext_resource type="PackedScene" path="res://assets/items/Item.tscn" id="1_item"]
+[ext_resource type="Script" uid="uid://hah8jjkovnlp" path="res://assets/items/healing/HealingItem.gd" id="2_healing"]
+[ext_resource type="Texture2D" uid="uid://cljfbs4ba17tt" path="res://assets/items/healing/sprites/apple.png" id="3_2035r"]
+
+[node name="HealingItem" unique_id=33912247 instance=ExtResource("1_item")]
+script = ExtResource("2_healing")
+heal_amount = 1
+
+[node name="Visual" type="Node2D" parent="."]
+
+[node name="Sprite2D" type="Sprite2D" parent="Visual"]
+texture = ExtResource("3_2035r")
