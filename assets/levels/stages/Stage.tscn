@@ -5,6 +5,8 @@
 [ext_resource type="PackedScene" uid="uid://bsq1fna1l0b3g" path="res://assets/characters/monos/PickupItem.tscn" id="3_5sdbm"]
 [ext_resource type="Resource" uid="uid://dn3ogx4dwo7xo" path="res://assets/resources/PebbleSetting.tres" id="4_1yw1j"]
 [ext_resource type="PackedScene" uid="uid://bdjku5w3w2ltw" path="res://assets/characters/enemies/Wolf.tscn" id="5_wolf"]
+[ext_resource type="PackedScene" uid="uid://g65iyxudhyo6" path="res://assets/ui/hud/PlayerHUD.tscn" id="6_hud"]
+[ext_resource type="PackedScene" uid="uid://b1efd53s27fp6" path="res://assets/items/healing/HealingItem.tscn" id="7_6na0e"]
 
 [node name="Node2D" type="Node2D" unique_id=219757869]
 
@@ -31,3 +33,10 @@ position = Vector2(393, 33)
 
 [node name="Wolf2" parent="." unique_id=637072966 instance=ExtResource("5_wolf")]
 position = Vector2(489, 36)
+
+[node name="PlayerHUD" parent="." unique_id=1590198890 node_paths=PackedStringArray("player") instance=ExtResource("6_hud")]
+player = NodePath("../Player")
+
+[node name="HealingItem" parent="." unique_id=33912247 instance=ExtResource("7_6na0e")]
+position = Vector2(-192, 17)
+scale = Vector2(1.5, 1.5)

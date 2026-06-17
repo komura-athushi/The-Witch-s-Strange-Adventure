@@ -1,10 +1,13 @@
 class_name Player
 extends CharacterBody2D
 
+signal health_changed(current_hp: int, max_hp: int)
+signal died
+
 @export var config: PlayerConfig
 
 @export_flags_2d_physics var click_mask: int = 1 << 3
-@export var hp: int = 3
+@export_range(1, 99, 1) var max_hp: int = 3
 @export var invincible_duration: float = 1.0
 @export var damage_blink_interval: float = 0.08
 
@@ -15,7 +18,7 @@ extends CharacterBody2D
 @onready var throw_prediction_line: ThrowPredictionLine = $ThrowPredictionLine
 var nearby_interactables: Array[Node] = []
 var held_item: PickupItem = null
-var current_hp: int
+var current_hp: int = 0
 var _invincible_time_left: float = 0.0
 var _blink_time_left: float = 0.0
 
@@ -25,9 +28,10 @@ func _ready() -> void:
 	if config == null:
 		config = PlayerConfig.new()
 	sprite2D.sprite_frames.set_animation_loop(&"jump", false)
-	current_hp = hp
+	current_hp = max_hp
 	interaction_detector.body_entered.connect(_on_detector_body_entered)
 	interaction_detector.body_exited.connect(_on_detector_body_exited)
+	health_changed.emit(current_hp, max_hp)
 
 func _process(delta: float) -> void:
 	_process_damage_invincibility(delta)
@@ -126,17 +130,44 @@ func get_hold_position(item_offset: Vector2) -> Vector2:
 	return hold_socket.global_position + item_offset
 
 func take_damage(amount: int) -> bool:
-	if amount <= 0 or is_invincible():
+	if amount <= 0 or current_hp <= 0 or is_invincible():
 		return false
 
-	current_hp = maxi(current_hp - amount, 0)
+	_set_current_hp(current_hp - amount)
 	_invincible_time_left = invincible_duration
 	_blink_time_left = 0.0
 	visual.visible = true
 	return true
 
+func heal(amount: int) -> bool:
+	if amount <= 0 or current_hp <= 0 or current_hp >= max_hp:
+		return false
+
+	_set_current_hp(current_hp + amount)
+	return true
+
+func set_max_health(value: int, heal_added_health: bool = false) -> void:
+	var previous_max_hp := max_hp
+	max_hp = maxi(value, 1)
+
+	if heal_added_health and max_hp > previous_max_hp:
+		current_hp += max_hp - previous_max_hp
+
+	current_hp = clampi(current_hp, 0, max_hp)
+	health_changed.emit(current_hp, max_hp)
+
 func is_invincible() -> bool:
 	return _invincible_time_left > 0.0
+
+func _set_current_hp(value: int) -> void:
+	var previous_hp := current_hp
+	current_hp = clampi(value, 0, max_hp)
+	if current_hp == previous_hp:
+		return
+
+	health_changed.emit(current_hp, max_hp)
+	if current_hp == 0:
+		died.emit()
 
 func _process_damage_invincibility(delta: float) -> void:
 	if _invincible_time_left <= 0.0:
